@@ -136,8 +136,17 @@
   function writeJSON(key, v) { try { var s = ls(); if (!s) return false; if (v == null) s.removeItem(key); else s.setItem(key, JSON.stringify(v)); return true; } catch (e) { return false; } }
 
   function config() { return readJSON(CFG_KEY) || {}; }
+  // Accept "user", "@user", "https://github.com/user", "user/repo" or a full ".git" URL in either field.
+  function cleanName(s) {
+    return String(s || '').trim().replace(/^https?:\/\/(www\.)?github\.com\//i, '').replace(/^@/, '')
+      .replace(/\.git$/i, '').replace(/\/+$/, '');
+  }
   function setConfig(patch) {
-    var c = Object.assign(config(), patch || {});
+    patch = Object.assign({}, patch || {});
+    if (patch.owner != null) patch.owner = cleanName(patch.owner).split('/')[0];
+    if (patch.repo != null) { var parts = cleanName(patch.repo).split('/'); patch.repo = parts[parts.length - 1]; }
+    if (patch.token != null) patch.token = String(patch.token).replace(/\s+/g, '');
+    var c = Object.assign(config(), patch);
     Object.keys(c).forEach(function (k) { if (c[k] === '' || c[k] == null) delete c[k]; });
     writeJSON(CFG_KEY, c);
     return c;
@@ -169,12 +178,13 @@
   function headers(c) {
     return { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
   }
-  function httpError(res, what) {
+  function httpError(res, what, c) {
+    c = c || {};
     return res.json().catch(function () { return {}; }).then(function (j) {
       var msg = j && j.message ? j.message : res.statusText;
       if (res.status === 401) msg = 'the token was refused (expired or mistyped)';
       else if (res.status === 403) msg = 'the token has no write access to this repo (' + msg + ')';
-      else if (res.status === 404 && what === 'repo') msg = 'repo not found, or the token cannot see it';
+      else if (res.status === 404 && what === 'repo') msg = 'repo "' + c.owner + '/' + c.repo + '" not found, or the token cannot see it (check the token\'s repository access)';
       var e = new Error(msg);
       e.status = res.status;
       throw e;
@@ -187,7 +197,7 @@
         // No file yet is fine, but only if the repo itself is reachable.
         var repoUrl = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo);
         return root.fetch(repoUrl, { headers: headers(c), cache: 'no-store' }).then(function (r2) {
-          if (!r2.ok) return httpError(r2, 'repo');
+          if (!r2.ok) return httpError(r2, 'repo', c);
           return { sha: null, state: null };
         });
       }
