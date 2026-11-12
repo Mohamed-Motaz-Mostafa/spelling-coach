@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spelling Coach</title>
+<meta name="description" content="Offline IELTS spelling trainer: dictation, spelling patterns, spaced review and a memory of your mistakes.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f5bd3'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3EAa%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="app/styles.css">
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+<header class="topbar">
+  <a class="brand" href="#today" aria-label="Spelling Coach home">
+    <span class="logo" aria-hidden="true">Aa</span>
+    <span class="brand-text">Spelling Coach <span class="brand-sub">IELTS</span></span>
+  </a>
+  <nav id="nav" aria-label="Main">
+    <a href="#today" data-route="today">Today</a>
+    <a href="#lessons" data-route="lessons">Lessons</a>
+    <a href="#words" data-route="words">Words</a>
+    <a href="#mistakes" data-route="mistakes">Mistakes</a>
+    <a href="#writing" data-route="writing">Writing</a>
+    <a href="#settings" data-route="settings">Settings</a>
+  </nav>
+  <div class="status" id="status" aria-live="polite"></div>
+</header>
+<div id="banner"></div>
+<main id="app" tabindex="-1">
+  <noscript><p class="card">Spelling Coach needs JavaScript. Please open this file in Microsoft Edge, Chrome or Firefox.</p></noscript>
+  <p class="loading">Loading your words&hellip;</p>
+</main>
+<div id="modal-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="data/words.js"></script>
+<script src="data/lessons.js"></script>
+<script src="data/writing.js"></script>
+<script src="app/ai-keys.local.js"></script>
+<script src="app/morphology.js"></script>
+<script src="app/analyzer.js"></script>
+<script src="app/scheduler.js"></script>
+<script src="app/store.js"></script>
+<script src="app/sync.js"></script>
+<script src="app/speech.js"></script>
+<script src="app/dictionary.js"></script>
+<script src="app/ai.js"></script>
+<script src="app/passage.js"></script>
+<script src="app/ui.js"></script>
+<script src="app/pages.js"></script>
+<script src="app/writing.js"></script>
+<script>
+  if (!window.SC_WORDS || !window.SC_LESSONS) {
+    document.getElementById('app').innerHTML = '<div class="card"><h2>Word data not found</h2><p>The files in the <code>data</code> folder are missing. Keep this HTML file inside the <b>spelling-coach</b> folder, next to the <code>app</code> and <code>data</code> folders.</p></div>';
+  } else {
+    SC.ui.start();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# Private: Gemini API keys (enter keys in Settings on other devices)
+app/ai-keys.local.js
+*.local.js
+*.local.*
+
+# Build caches and environments (large, re-downloadable)
+build/raw/
+build/.venv/
+__pycache__/
+node_modules/
